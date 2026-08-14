@@ -164,7 +164,7 @@ shows the customer use case. Open **Recent updates** on a project card for its
 safe local report history. **Needs your attention** shows only projects whose
 reports literally record a blocker and their exact next action. With the normal
 local report store, it also shows whether the shared handoff is current, stale,
-or missing.
+or missing—and, when it needs a refresh, gives the exact local command.
 
 ## What is here
 

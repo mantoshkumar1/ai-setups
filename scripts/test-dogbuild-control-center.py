@@ -69,6 +69,10 @@ class ControlCenterTest(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
+            with urlopen("http://127.0.0.1:{}/".format(server.server_port)) as response:
+                page = response.read().decode("utf-8")
+            self.assertIn("Shared handoff needs an update", page)
+            self.assertIn("dogbuild-sync-project-updates.py", page)
             with urlopen("http://127.0.0.1:{}/api/projects".format(server.server_port)) as response:
                 payload = json.loads(response.read().decode("utf-8"))
             self.assertEqual(payload["projects"][0]["project"], "alpha")
