@@ -12,3 +12,6 @@ Keep each update simple:
 - What happens next
 
 Do not include tokens, secrets, full logs, or product source code.
+
+To see the latest report for each project, run `bash scripts/dogbuild-overview.sh`
+from the repository root. The overview is local and read-only.
