@@ -2,7 +2,7 @@
 
 DogBuild puts short, safe status updates here.
 
-Use one file per update: `YYYY-MM-DD-summary.md`.
+Use one file per update: `YYYY-MM-DDTHHMMSSZ-summary.md`.
 
 Keep each update simple:
 
