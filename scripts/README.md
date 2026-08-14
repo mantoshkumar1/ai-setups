@@ -39,3 +39,16 @@ endpoint. It does not read real reports, configuration, or the network.
 It also checks the safe report import path: one explicitly chosen report is
 copied into a temporary local store, while unsafe, malformed, and conflicting
 reports are left alone.
+
+## Test the actual DogBuild handoff (optional)
+
+If DogBuild is installed, run:
+
+```sh
+bash scripts/test-dogbuild-handoff.sh
+```
+
+It creates a temporary Git project, asks DogBuild to write one safe report,
+then proves that report reaches a temporary ai-setups handoff. It does not use
+real reports, `config/`, or the network. If DogBuild is not installed, it
+prints a skip message and changes nothing.
