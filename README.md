@@ -55,12 +55,26 @@ I open Codex and start a task in the actual project I want to work on—not in `
 
 If I need user-owned GitHub Projects v2 data, I ask Codex for that work normally. The local credential is used only when needed.
 
+## See project updates
+
+DogBuild can put short, safe reports in `reports/dogbuild/`. To see the latest update for each project, run:
+
+```sh
+bash scripts/dogbuild-overview.sh
+```
+
+```powershell
+.\scripts\dogbuild-overview.ps1
+```
+
+This is local and read-only. It scans only the report folder and skips malformed or unsafe reports.
+
 ## What is here
 
 - `context/` — safe shared context for Codex and Cowork.
 - `config/` — my local secrets; see [config/README.md](config/README.md).
 - `codex/` — more detail about my Codex setup; see [codex/README.md](codex/README.md).
-- `reports/` — safe updates from my projects; DogBuild reports in `reports/dogbuild/`.
+- `reports/` — safe updates from my projects; DogBuild reports and the local overview live here.
 - `scripts/` — setup and validation helpers; see [scripts/README.md](scripts/README.md) for test notes.
 
 ## Keep secrets local
