@@ -48,16 +48,14 @@ Technical capability is not semantic authority. Repository-specific governance w
 - Never paste credentials into prompts, logs, issues, pull requests, commits, or artifacts.
 - If a secret is ever committed, treat it as compromised and rotate it; deleting the file is not enough.
 
-## New machine recovery
+## Quick setup on a new machine
 
 1. Clone this private repository.
-2. Recreate `config/.github-pat` locally.
-3. Restrict `config/.github-pat` to the current user: use `chmod 600 config/.github-pat` on macOS/Linux, or a user-only NTFS ACL on Windows.
-4. Configure `~/.codex/AGENTS.md` to point at the shared context.
-5. Connect Claude Cowork only to `context/`.
-6. Paste `CLAUDE_COWORK_GLOBAL.txt` into Cowork Global Instructions.
-7. Test Codex Projects v2 read capability.
-8. Test Cowork shared-context loading.
+2. Create `config/.github-pat` locally with your own GitHub token. Never commit or share it.
+3. Restrict it to your user: run `chmod 600 config/.github-pat` on macOS/Linux, or set a user-only NTFS ACL on Windows.
+4. In `~/.codex/AGENTS.md`, point Codex to `<your-clone>/context/GLOBAL_AI_CONTEXT.md`.
+5. In Claude Cowork, connect only `<your-clone>/context` and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions.
+6. Verify Codex can read Projects v2 and Cowork can load the shared context.
 
 ## Platform support
 
