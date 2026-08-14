@@ -30,6 +30,29 @@ The script cannot do these personal or app-specific steps for you:
 4. If you use Claude Cowork, make its one-time `context/` connection and paste its Global Instructions in the Cowork app.
 5. Whenever you want to work, choose the actual project and start a new Codex task there.
 
+## Validate your setup
+
+Run one command from the repository root:
+
+```sh
+# macOS or Linux
+bash scripts/validate.sh
+```
+
+```powershell
+# Windows PowerShell
+.\scripts\validate.ps1
+```
+
+The validator checks the shared context, the local PAT file, its permissions, Git ignore/tracking status, and the Codex instruction reference. It does not read or display the PAT. A passing result means the local setup is correct.
+
+Then run these two quick smoke tests that no script can perform:
+
+1. In a new Codex task, ask: “Read the shared machine context. What are the four GitHub access paths?” It should answer `gh CLI`, Git transport, the structured GitHub connector/API, and browser/UI.
+2. If you use Claude Cowork, start a new Cowork chat connected to `context/` and ask: “Which directory must you not access?” It should identify the sibling `config/` directory.
+
+If you use GitHub Projects v2, also ask Codex to read one known user-owned Project. A successful response confirms the local credential works; never paste the PAT into the task.
+
 ## Use it: start a Codex session
 
 1. Open the Codex desktop app.
