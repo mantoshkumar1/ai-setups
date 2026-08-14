@@ -1,0 +1,32 @@
+name: Safe setup checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  unix:
+    name: Unix (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run isolated checks
+        run: |
+          python3 scripts/test-dogbuild-control-center.py
+          bash scripts/test-dogbuild-overview.sh
+          bash scripts/test-setup.sh
+          bash scripts/test-dogbuild-handoff.sh
+
+  windows:
+    name: Windows setup
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run isolated setup check
+        shell: pwsh
+        run: .\scripts\test-setup.ps1

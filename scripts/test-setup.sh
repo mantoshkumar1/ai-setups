@@ -29,7 +29,12 @@ printf '%s\n' "$test_token" | HOME="$test_root/home" bash "$test_repo/scripts/se
 pass "setup script and its built-in validation completed"
 
 test -f "$test_repo/config/.github-pat"
-test "$(stat -f '%Lp' "$test_repo/config/.github-pat" 2>/dev/null || stat -c '%a' "$test_repo/config/.github-pat")" = 600
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  pat_mode="$(stat -f '%Lp' "$test_repo/config/.github-pat")"
+else
+  pat_mode="$(stat -c '%a' "$test_repo/config/.github-pat")"
+fi
+test "$pat_mode" = 600
 pass "temporary PAT file was created with restricted permissions"
 
 git -C "$test_repo" check-ignore -q -- config/.github-pat

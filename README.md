@@ -47,6 +47,14 @@ On macOS or Linux, I can test the setup script without changing my real PAT, `~/
 bash scripts/test-setup.sh
 ```
 
+On Windows PowerShell, run:
+
+```powershell
+.\scripts\test-setup.ps1
+```
+
+Both tests use a temporary repository, fake token, and temporary Codex folder.
+
 ## Check it worked
 
 The setup script validates the local setup automatically. I can rerun it any time:
@@ -180,6 +188,6 @@ or missing—and, when it needs a refresh, gives the exact local command.
 
 ## Notes
 
-This setup has been tested only on my MacBook. Windows and Linux notes are untested guidance for now.
+This setup has been used on my MacBook. Hosted checks exercise the setup path on macOS, Linux, and Windows; real-machine Windows and Linux setup is still unverified.
 
 Rule of thumb: safe AI-readable material goes in `context/`; credentials stay in `config/` and never go to Git.

@@ -4,7 +4,8 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $contextFile = Join-Path $repoRoot 'context/GLOBAL_AI_CONTEXT.md'
 $patFile = Join-Path $repoRoot 'config/.github-pat'
-$agentFile = Join-Path (Join-Path $HOME '.codex') 'AGENTS.md'
+$aiSetupsHome = if ($env:AI_SETUPS_HOME) { $env:AI_SETUPS_HOME } else { $HOME }
+$agentFile = Join-Path (Join-Path $aiSetupsHome '.codex') 'AGENTS.md'
 $failures = 0
 
 function Pass([string]$message) {
