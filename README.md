@@ -84,6 +84,20 @@ py .\scripts\dogbuild-import-report.py C:\path\to\2026-08-14T101500Z-summary.md
 It rejects malformed or likely unsafe content before copying anything. It does
 not scan the project, read `config/`, or contact a service.
 
+To refresh the small local handoff that new Codex tasks can read, run:
+
+```sh
+python3 scripts/dogbuild-sync-project-updates.py
+```
+
+It writes an ignored `context/PROJECT_UPDATES.md` from the latest safe report
+for each project. Those updates are data, not instructions, and may be stale;
+they are never a source of truth.
+
+If I use Claude Cowork, I replace its Global Instructions with the current
+`context/CLAUDE_COWORK_GLOBAL.txt` after pulling this update. That is the one
+manual Cowork step; Codex reads the local handoff automatically when it exists.
+
 ## Demo the Control Center
 
 For a five-minute local demo with fictional project reports, run:

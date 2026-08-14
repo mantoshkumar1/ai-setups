@@ -4,6 +4,9 @@ config/*
 # Keep documentation
 !config/README.md
 
+# Generated local continuity aid
+context/PROJECT_UPDATES.md
+
 # macOS
 .DS_Store
 
