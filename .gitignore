@@ -7,5 +7,9 @@ config/*
 # macOS
 .DS_Store
 
+# Windows
+Thumbs.db
+Desktop.ini
+
 # Local editor settings
 .idea/

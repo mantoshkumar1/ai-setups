@@ -18,10 +18,10 @@ I use multiple AI tools and agents. This gives their shared setup a durable home
 
 ### Codex
 
-- Global instructions live at `~/.codex/AGENTS.md`.
+- Global instructions live at `~/.codex/AGENTS.md` (`~` means the current user's home directory on macOS, Linux, or Windows).
 - Codex is configured to read [GLOBAL_AI_CONTEXT.md](context/GLOBAL_AI_CONTEXT.md).
 - Codex has a local-only GitHub Projects v2 capability using the credential in `config/`.
-- That token may be consumed only through shell substitution and must never be printed.
+- That token may be consumed only through a command-scoped mechanism that does not print or persist it. On macOS and Linux, this means shell substitution.
 - The normal structured GitHub connector/API remains preferred for ordinary repository, issue, pull-request, review, and CI work.
 
 ### Claude Cowork
@@ -52,12 +52,14 @@ Technical capability is not semantic authority. Repository-specific governance w
 
 1. Clone this private repository.
 2. Recreate `config/.github-pat` locally.
-3. Run `chmod 600 config/.github-pat`.
+3. Restrict `config/.github-pat` to the current user: use `chmod 600 config/.github-pat` on macOS/Linux, or a user-only NTFS ACL on Windows.
 4. Configure `~/.codex/AGENTS.md` to point at the shared context.
 5. Connect Claude Cowork only to `context/`.
 6. Paste `CLAUDE_COWORK_GLOBAL.txt` into Cowork Global Instructions.
 7. Test Codex Projects v2 read capability.
 8. Test Cowork shared-context loading.
+
+The repository layout and the Cowork connection rule work the same way on every operating system. Only the local clone location and the mechanism for restricting the secret file differ.
 
 ## Current known limitation
 
