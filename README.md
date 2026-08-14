@@ -6,6 +6,18 @@ My private, local setup for Codex and Claude Cowork. I keep shared AI context he
 
 I use more than one AI tool. This saves me from repeating the same setup every time and helps me keep shared context separate from secrets.
 
+## My local AI state
+
+When I switch projects, I want a short honest handoff—not old chats, logs, or
+made-up AI memory.
+
+1. DogBuild makes one safe project report.
+2. I import that exact file into ai-setups.
+3. The import refreshes my local handoff, so the next Codex task can read it.
+
+The handoff shows only what changed, worked, is blocked, and happens next,
+with the report time. It is local, ignored by Git, and never a source of truth.
+
 ## Set up a new machine
 
 1. Clone this private repository.
