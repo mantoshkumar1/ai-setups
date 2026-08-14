@@ -1,0 +1,11 @@
+# Secret store: ignore everything by default
+config/*
+
+# Keep documentation
+!config/README.md
+
+# macOS
+.DS_Store
+
+# Local editor settings
+.idea/

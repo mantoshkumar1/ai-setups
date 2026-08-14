@@ -1,0 +1,26 @@
+# Shared local AI operating context
+
+Prefer structured GitHub connectors and APIs over browser navigation for repositories, issues, PRs, reviews, review threads, commits, branches, CI, and metadata when available.
+
+Treat these GitHub access paths independently:
+- gh CLI
+- Git transport
+- structured GitHub connector/API
+- browser/UI
+
+Failure of one path does not imply the others are unavailable.
+
+Never change GitHub account, repository owner, repository, remote, fork topology, PR topology, or publication transport merely because one access path fails. Fail closed and report the exact capability blocker.
+
+Technical capability and semantic authority are separate. Repository-specific governance overrides these global defaults whenever it is stricter.
+
+Never print, echo, log, display, commit, publish, transmit, or include credential values in responses or artifacts.
+
+Do not enumerate or dump secret files.
+
+The directory:
+/Users/mantoshkumar/Desktop/project/ai-setups/config
+is a secret/configuration store and is not general agent context.
+
+Safe shared machine-level context lives at:
+/Users/mantoshkumar/Desktop/project/ai-setups/context

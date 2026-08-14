@@ -1,0 +1,21 @@
+Prefer structured GitHub connectors and APIs over browser navigation for repositories, issues, PRs, reviews, review threads, commits, branches, CI, and metadata.
+
+Treat gh CLI, Git transport, the structured GitHub connector/API, and browser access as separate capabilities. Failure of one does not imply the others are unavailable.
+
+Never change GitHub account, repository owner, repository, remote, fork topology, PR topology, or publication transport merely because one access path fails. Fail closed and report the exact capability blocker.
+
+Technical capability and semantic authority are separate. Repository-specific governance overrides these global defaults whenever it is stricter.
+
+Never print, echo, log, display, commit, publish, or transmit credentials or secrets.
+
+Do not request or access:
+/Users/mantoshkumar/Desktop/project/ai-setups/config
+
+That directory is the machine secret store and is intentionally not Cowork context.
+
+Safe shared machine-level context lives at:
+/Users/mantoshkumar/Desktop/project/ai-setups/context/GLOBAL_AI_CONTEXT.md
+
+Cowork should connect only `/Users/mantoshkumar/Desktop/project/ai-setups/context`, never the `ai-setups` parent directory.
+
+If a required capability is unavailable through Cowork's configured tools/connectors, report the capability blocker instead of asking for secret-folder access.
