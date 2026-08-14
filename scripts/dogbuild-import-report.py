@@ -7,6 +7,7 @@ import argparse
 import importlib.util
 import sys
 from pathlib import Path
+from typing import List, Optional
 
 
 SCRIPT = Path(__file__).with_name("dogbuild-control-center.py")
@@ -16,7 +17,7 @@ assert SPEC and SPEC.loader
 SPEC.loader.exec_module(control_center)
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="Import one explicit safe DogBuild report into the local Control Center store."
     )
