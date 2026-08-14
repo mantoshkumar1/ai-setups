@@ -77,6 +77,41 @@ class ControlCenterTest(unittest.TestCase):
             server.shutdown()
             server.server_close()
 
+    def test_imports_one_safe_explicit_report_without_overwrite(self):
+        source_dir = Path(self.temp.name) / "source"
+        source_dir.mkdir()
+        source = source_dir / "2026-08-14T101500Z-summary.md"
+        report(source, "atlas-web", "imported update")
+        destination_dir = Path(self.temp.name) / "central"
+
+        destination = control_center.import_report(source, destination_dir)
+        self.assertEqual(destination.name, "2026-08-14T101500Z--atlas-web-summary.md")
+        self.assertEqual(control_center.load_projects(destination_dir)[0]["changed"], "imported update")
+        self.assertEqual(control_center.import_report(source, destination_dir), destination)
+
+        report(source, "atlas-web", "different update")
+        with self.assertRaises(FileExistsError):
+            control_center.import_report(source, destination_dir)
+
+    def test_rejects_unsafe_or_nonstandard_imports_without_writing(self):
+        source = Path(self.temp.name) / "2026-08-14T101500Z-summary.md"
+        report(source, "atlas-web", "ghp_abcdefghijklmnopqrstuvwxyz1234567890")
+        destination_dir = Path(self.temp.name) / "central"
+        with self.assertRaises(ValueError):
+            control_center.import_report(source, destination_dir)
+        self.assertFalse(destination_dir.exists())
+
+        malformed_name = Path(self.temp.name) / "not-a-report.md"
+        report(malformed_name, "atlas-web", "safe update")
+        with self.assertRaises(ValueError):
+            control_center.import_report(malformed_name, destination_dir)
+        self.assertFalse(destination_dir.exists())
+
+    def test_containment_check_resolves_paths(self):
+        config_dir = Path(self.temp.name) / "config"
+        self.assertTrue(control_center.is_within(config_dir / "future.md", config_dir))
+        self.assertFalse(control_center.is_within(Path(self.temp.name) / "elsewhere.md", config_dir))
+
 
 if __name__ == "__main__":
     unittest.main()

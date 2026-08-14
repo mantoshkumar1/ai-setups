@@ -69,6 +69,21 @@ bash scripts/dogbuild-overview.sh
 
 This is local and read-only. It scans only the report folder and skips malformed or unsafe reports.
 
+To add one report from another project, give ai-setups that exact report file:
+
+```sh
+python3 scripts/dogbuild-import-report.py /path/to/2026-08-14T101500Z-summary.md
+```
+
+On Windows PowerShell, the equivalent (untested) command is:
+
+```powershell
+py .\scripts\dogbuild-import-report.py C:\path\to\2026-08-14T101500Z-summary.md
+```
+
+It rejects malformed or likely unsafe content before copying anything. It does
+not scan the project, read `config/`, or contact a service.
+
 ## Demo the Control Center
 
 For a five-minute local demo with fictional project reports, run:

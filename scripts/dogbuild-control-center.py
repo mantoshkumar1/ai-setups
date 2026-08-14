@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -22,6 +23,7 @@ DEFAULT_REPORTS = ROOT / "reports" / "dogbuild"
 DEMO_REPORTS = ROOT / "demo" / "dogbuild-reports"
 PROJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 TIMESTAMP_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{6}Z)-summary\.md$")
+REPORT_FILENAME_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{6}Z)(?:--[A-Za-z0-9._-]+)?-summary\.md$")
 UNSAFE_RE = re.compile(
     r"ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|"
     r"AKIA[0-9A-Z]{16}|Bearer\s+\S+|Authorization:\s*\S+",
@@ -47,23 +49,19 @@ def _detail(lines: List[str], heading: str) -> str:
 
 
 def _display_time(filename: str) -> str:
-    match = TIMESTAMP_RE.match(filename)
+    match = REPORT_FILENAME_RE.match(filename)
     if not match:
         return "Unknown time"
     timestamp = match.group(1)
     return "{} {} UTC".format(timestamp[:10], timestamp[11:13] + ":" + timestamp[13:15])
 
 
-def parse_report(path: Path) -> Optional[Dict[str, str]]:
-    """Return one safe, well-formed report or None.
+def parse_report_text(text: str, filename: str) -> Optional[Dict[str, str]]:
+    """Return one safe, well-formed report body or None.
 
     This intentionally does not try to repair report content. A bad or unsafe
     file should be invisible rather than accidentally become a data source.
     """
-    try:
-        text = path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
-        return None
     if UNSAFE_RE.search(text):
         return None
 
@@ -77,14 +75,80 @@ def parse_report(path: Path) -> Optional[Dict[str, str]]:
         "worked": _detail(lines, "What worked"),
         "blocked": _detail(lines, "What is blocked"),
         "next": _detail(lines, "What happens next"),
-        "updated": _display_time(path.name),
-        "filename": path.name,
+        "updated": _display_time(filename),
+        "filename": filename,
     }
     if not PROJECT_RE.match(project or ""):
         return None
     if not all(result[key] for key in ("branch", "head", "changed", "worked", "blocked", "next")):
         return None
     return result
+
+
+def parse_report(path: Path) -> Optional[Dict[str, str]]:
+    """Return one safe, well-formed report file or None."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    return parse_report_text(text, path.name)
+
+
+def is_within(path: Path, directory: Path) -> bool:
+    """Return whether a resolved path is contained by a resolved directory."""
+    try:
+        path.resolve().relative_to(directory.resolve())
+    except ValueError:
+        return False
+    return True
+
+
+def import_report(source: Path, reports_dir: Path) -> Path:
+    """Copy one explicit safe report into the local report store without overwriting."""
+    if is_within(source, ROOT / "config") or is_within(reports_dir, ROOT / "config"):
+        raise ValueError("The config directory is never a report source or destination")
+    if not TIMESTAMP_RE.match(source.name):
+        raise ValueError("Source filename must be YYYY-MM-DDTHHMMSSZ-summary.md")
+    try:
+        text = source.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as error:
+        raise ValueError("Could not read the source report as UTF-8 text") from error
+
+    report = parse_report_text(text, source.name)
+    if report is None:
+        raise ValueError("Source report is malformed or contains a likely secret")
+
+    timestamp = TIMESTAMP_RE.match(source.name).group(1)
+    destination = reports_dir / "{}--{}-summary.md".format(timestamp, report["project"])
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        existing = destination.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        existing = None
+    except (OSError, UnicodeDecodeError) as error:
+        raise ValueError("Could not safely inspect the existing destination") from error
+    if existing == text:
+        return destination
+    if existing is not None:
+        raise FileExistsError("A different report already exists for this project and timestamp")
+
+    descriptor = None
+    try:
+        descriptor = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            descriptor = None
+            handle.write(text)
+    except FileExistsError as error:
+        raise FileExistsError("A report appeared at the destination; nothing was overwritten") from error
+    except OSError as error:
+        if descriptor is not None:
+            os.close(descriptor)
+        try:
+            destination.unlink()
+        except FileNotFoundError:
+            pass
+        raise ValueError("Could not write the local report") from error
+    return destination
 
 
 def load_projects(reports_dir: Path) -> List[Dict[str, str]]:
