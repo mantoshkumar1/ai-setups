@@ -63,7 +63,9 @@ class ControlCenterTest(unittest.TestCase):
 
     def test_local_json_endpoint(self):
         report(self.reports / "2026-08-14T010000Z-summary.md", "alpha", "new")
-        server = ThreadingHTTPServer(("127.0.0.1", 0), control_center.handler_for(self.reports))
+        handoff = Path(self.temp.name) / "PROJECT_UPDATES.md"
+        control_center.write_project_updates(self.reports, handoff)
+        server = ThreadingHTTPServer(("127.0.0.1", 0), control_center.handler_for(self.reports, handoff))
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
@@ -72,6 +74,7 @@ class ControlCenterTest(unittest.TestCase):
             self.assertEqual(payload["projects"][0]["project"], "alpha")
             self.assertEqual(payload["projects"][0]["next"], "Open the next task")
             self.assertFalse(payload["projects"][0]["has_recorded_blocker"])
+            self.assertEqual(payload["handoff_status"], "current")
             with urlopen("http://127.0.0.1:{}/api/projects/alpha/history".format(server.server_port)) as response:
                 history = json.loads(response.read().decode("utf-8"))
             self.assertEqual(history["history"][0]["changed"], "new")
