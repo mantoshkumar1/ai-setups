@@ -30,7 +30,9 @@ function Detail([string[]]$Lines, [string]$Heading) {
 }
 
 $unsafe = 'ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|Bearer\s+\S+|Authorization:\s*\S+'
-$entries = foreach ($report in Get-ChildItem -LiteralPath $ReportsDir -File -Filter '*-summary.md' | Sort-Object Name) {
+$entries = foreach ($report in Get-ChildItem -LiteralPath $ReportsDir -File -Filter '*.md' | Sort-Object Name) {
+    $filenameMatch = [regex]::Match($report.Name, '^(\d{4}-\d{2}-\d{2}T\d{6}Z)(?:--[A-Za-z0-9._-]+)?-summary(?:-(\d+))?\.md$')
+    if (-not $filenameMatch.Success) { continue }
     $lines = @(Get-Content -LiteralPath $report.FullName)
     if (($lines -join "`n") -match $unsafe) { continue }
 
@@ -41,6 +43,7 @@ $entries = foreach ($report in Get-ChildItem -LiteralPath $ReportsDir -File -Fil
     $worked = Detail $lines 'What worked'
     $blocked = Detail $lines 'What is blocked'
     $next = Detail $lines 'What happens next'
+    $sequence = if ($filenameMatch.Groups[2].Success) { [int]$filenameMatch.Groups[2].Value } else { 1 }
 
     if ($project -notmatch '^[A-Za-z0-9][A-Za-z0-9._-]*$') { continue }
     if ([string]::IsNullOrWhiteSpace($branch) -or [string]::IsNullOrWhiteSpace($head) -or
@@ -48,7 +51,9 @@ $entries = foreach ($report in Get-ChildItem -LiteralPath $ReportsDir -File -Fil
         [string]::IsNullOrWhiteSpace($blocked) -or [string]::IsNullOrWhiteSpace($next)) { continue }
 
     [PSCustomObject]@{
-        Project = $project; Name = $report.Name; Branch = $branch; Head = $head
+        Project = $project; Timestamp = $filenameMatch.Groups[1].Value
+        Sequence = $sequence
+        Branch = $branch; Head = $head
         Changed = $changed; Worked = $worked; Blocked = $blocked; Next = $next
     }
 }
@@ -61,7 +66,7 @@ if (@($entries).Count -eq 0) {
 Write-Host 'DogBuild report overview'
 Write-Host ''
 foreach ($entry in $entries | Group-Object Project | ForEach-Object {
-    $_.Group | Sort-Object Name | Select-Object -Last 1
+    $_.Group | Sort-Object Timestamp, Sequence | Select-Object -Last 1
 } | Sort-Object Project) {
     Write-Host $entry.Project
     Write-Host "  Branch: $($entry.Branch)  Head: $($entry.Head)"

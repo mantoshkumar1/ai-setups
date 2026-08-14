@@ -44,17 +44,18 @@ class ControlCenterTest(unittest.TestCase):
     def test_latest_safe_report_per_project(self):
         report(self.reports / "2026-08-14T010000Z-summary.md", "alpha", "old")
         report(self.reports / "2026-08-14T020000Z-summary.md", "alpha", "new")
+        report(self.reports / "2026-08-14T020000Z-summary-2.md", "alpha", "collision new")
         report(self.reports / "2026-08-14T015000Z-summary.md", "beta", "beta work", "Waiting for sandbox")
         report(self.reports / "2026-08-14T030000Z-summary.md", "unsafe", "ghp_abcdefghijklmnopqrstuvwxyz1234567890")
         (self.reports / "2026-08-14T040000Z-summary.md").write_text("not a report", encoding="utf-8")
 
         projects = control_center.load_projects(self.reports)
         self.assertEqual([project["project"] for project in projects], ["alpha", "beta"])
-        self.assertEqual(projects[0]["changed"], "new")
+        self.assertEqual(projects[0]["changed"], "collision new")
         self.assertEqual(projects[1]["blocked"], "Waiting for sandbox")
 
         history = control_center.load_history(self.reports, "alpha")
-        self.assertEqual([item["changed"] for item in history], ["new", "old"])
+        self.assertEqual([item["changed"] for item in history], ["collision new", "new", "old"])
         self.assertEqual(control_center.load_history(self.reports, "unsafe"), [])
         payload = control_center.project_payload(self.reports)
         self.assertFalse(payload[0]["has_recorded_blocker"])
@@ -93,6 +94,11 @@ class ControlCenterTest(unittest.TestCase):
         report(source, "atlas-web", "different update")
         with self.assertRaises(FileExistsError):
             control_center.import_report(source, destination_dir)
+
+        collision = source_dir / "2026-08-14T101500Z-summary-2.md"
+        report(collision, "atlas-web", "collision update")
+        collision_destination = control_center.import_report(collision, destination_dir)
+        self.assertEqual(collision_destination.name, "2026-08-14T101500Z--atlas-web-summary-2.md")
 
     def test_rejects_unsafe_or_nonstandard_imports_without_writing(self):
         source = Path(self.temp.name) / "2026-08-14T101500Z-summary.md"
