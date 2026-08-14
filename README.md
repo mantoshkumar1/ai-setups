@@ -27,6 +27,14 @@ I use more than one AI tool. This saves me from repeating the same setup every t
    - open **Cowork Global Instructions**;
    - paste the full contents of `context/CLAUDE_COWORK_GLOBAL.txt`.
 
+## Try it safely first
+
+On macOS or Linux, I can test the setup script without changing my real PAT, `~/.codex`, or this checkout:
+
+```sh
+bash scripts/test-setup.sh
+```
+
 ## Check it worked
 
 The setup script validates the local setup automatically. I can rerun it any time:
