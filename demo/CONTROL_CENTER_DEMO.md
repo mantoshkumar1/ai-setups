@@ -19,6 +19,10 @@ needs sandbox access; the other two projects have a clear next action but no
 recorded blocker. I can decide what to do without reopening an old agent
 session, reading logs, or giving a tool my credentials.
 
+Open **Recent updates** on `atlas-web` to see the safe progression from the
+earlier checkout-flow review to the current wording change. It gives useful
+continuity, not a reconstruction of an agent's hidden conversation.
+
 ## Make it real
 
 Start the same page without `--demo` after DogBuild has written reports into

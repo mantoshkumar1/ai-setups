@@ -52,6 +52,10 @@ class ControlCenterTest(unittest.TestCase):
         self.assertEqual(projects[0]["changed"], "new")
         self.assertEqual(projects[1]["blocked"], "Waiting for sandbox")
 
+        history = control_center.load_history(self.reports, "alpha")
+        self.assertEqual([item["changed"] for item in history], ["new", "old"])
+        self.assertEqual(control_center.load_history(self.reports, "unsafe"), [])
+
     def test_local_json_endpoint(self):
         report(self.reports / "2026-08-14T010000Z-summary.md", "alpha", "new")
         server = ThreadingHTTPServer(("127.0.0.1", 0), control_center.handler_for(self.reports))
@@ -62,6 +66,9 @@ class ControlCenterTest(unittest.TestCase):
                 payload = json.loads(response.read().decode("utf-8"))
             self.assertEqual(payload["projects"][0]["project"], "alpha")
             self.assertEqual(payload["projects"][0]["next"], "Open the next task")
+            with urlopen("http://127.0.0.1:{}/api/projects/alpha/history".format(server.server_port)) as response:
+                history = json.loads(response.read().decode("utf-8"))
+            self.assertEqual(history["history"][0]["changed"], "new")
         finally:
             server.shutdown()
             server.server_close()

@@ -80,7 +80,8 @@ python3 scripts/dogbuild-control-center.py --demo
 Open the local address shown in the terminal. The page refreshes safe reports
 from one local folder; it has no account, cloud sync, repository scanning, or
 access to `config/`. The short [demo walkthrough](demo/CONTROL_CENTER_DEMO.md)
-shows the customer use case.
+shows the customer use case. Open **Recent updates** on a project card for its
+safe local report history.
 
 ## What is here
 
