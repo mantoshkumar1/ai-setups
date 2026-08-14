@@ -78,4 +78,10 @@ else
   echo "Added the shared context to your personal Codex instructions."
 fi
 
-echo "Codex setup is complete. If you use Claude Cowork, connect only: $repo_root/context"
+printf '\nChecking your local setup now...\n'
+bash "$script_dir/validate.sh"
+
+printf '\nNext steps:\n'
+printf '%s\n' '1. Open Codex and start a new task in the actual project you want to work on.'
+printf '%s\n' '2. Describe the task normally; never paste the PAT into the conversation.'
+printf '%s\n' "3. If you use Claude Cowork, connect only: $repo_root/context"

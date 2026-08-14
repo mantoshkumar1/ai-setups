@@ -77,4 +77,15 @@ else {
     Write-Host 'Added the shared context to your personal Codex instructions.'
 }
 
-Write-Host "Codex setup is complete. If you use Claude Cowork, connect only: $repoRoot\context"
+Write-Host ''
+Write-Host 'Checking your local setup now...'
+& (Join-Path $PSScriptRoot 'validate.ps1')
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+
+Write-Host ''
+Write-Host 'Next steps:'
+Write-Host '1. Open Codex and start a new task in the actual project you want to work on.'
+Write-Host '2. Describe the task normally; never paste the PAT into the conversation.'
+Write-Host "3. If you use Claude Cowork, connect only: $repoRoot\context"

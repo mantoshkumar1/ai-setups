@@ -16,7 +16,7 @@ bash scripts/setup.sh
 .\scripts\setup.ps1
 ```
 
-The script finds this clone automatically, securely requests a PAT only when no local credential exists, protects the credential file, and adds the shared-context instruction below to your personal Codex file. It preserves unrelated instructions already in that file.
+The script finds this clone automatically, securely requests a PAT only when no local credential exists, protects the credential file, and adds the shared-context instruction below to your personal Codex file. It preserves unrelated instructions already in that file, runs the local validator, and prints the remaining manual steps.
 
 ## Validate setup
 

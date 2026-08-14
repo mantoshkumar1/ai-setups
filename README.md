@@ -17,7 +17,7 @@ Private, personal machine-level infrastructure for AI tools. This repository kee
    .\scripts\setup.ps1
    ```
 
-   The script asks for your PAT only if `config/.github-pat` is missing, protects that file, and sets up your personal Codex instructions. It never prints the token.
+   The script asks for your PAT only if `config/.github-pat` is missing, protects that file, sets up your personal Codex instructions, and runs the local validator. It ends by showing the remaining manual steps. It never prints the token.
 3. If you use Claude Cowork, connect only this repository's `context/` directory and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions. This is the one manual app setting.
 
 ## What you still do manually
@@ -32,7 +32,7 @@ The script cannot do these personal or app-specific steps for you:
 
 ## Validate your setup
 
-Run one command from the repository root:
+The setup script runs this automatically. Run it again any time from the repository root:
 
 ```sh
 # macOS or Linux
