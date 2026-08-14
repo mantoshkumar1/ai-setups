@@ -55,6 +55,9 @@ class ControlCenterTest(unittest.TestCase):
         history = control_center.load_history(self.reports, "alpha")
         self.assertEqual([item["changed"] for item in history], ["new", "old"])
         self.assertEqual(control_center.load_history(self.reports, "unsafe"), [])
+        payload = control_center.project_payload(self.reports)
+        self.assertFalse(payload[0]["has_recorded_blocker"])
+        self.assertTrue(payload[1]["has_recorded_blocker"])
 
     def test_local_json_endpoint(self):
         report(self.reports / "2026-08-14T010000Z-summary.md", "alpha", "new")
@@ -66,6 +69,7 @@ class ControlCenterTest(unittest.TestCase):
                 payload = json.loads(response.read().decode("utf-8"))
             self.assertEqual(payload["projects"][0]["project"], "alpha")
             self.assertEqual(payload["projects"][0]["next"], "Open the next task")
+            self.assertFalse(payload["projects"][0]["has_recorded_blocker"])
             with urlopen("http://127.0.0.1:{}/api/projects/alpha/history".format(server.server_port)) as response:
                 history = json.loads(response.read().decode("utf-8"))
             self.assertEqual(history["history"][0]["changed"], "new")

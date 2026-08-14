@@ -81,7 +81,8 @@ Open the local address shown in the terminal. The page refreshes safe reports
 from one local folder; it has no account, cloud sync, repository scanning, or
 access to `config/`. The short [demo walkthrough](demo/CONTROL_CENTER_DEMO.md)
 shows the customer use case. Open **Recent updates** on a project card for its
-safe local report history.
+safe local report history. **Needs your attention** shows only projects whose
+reports literally record a blocker and their exact next action.
 
 ## What is here
 
