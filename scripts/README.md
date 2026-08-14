@@ -35,3 +35,7 @@ python3 scripts/test-dogbuild-control-center.py
 
 This starts a temporary localhost server and checks report parsing plus its JSON
 endpoint. It does not read real reports, configuration, or the network.
+
+It also checks the safe report import path: one explicitly chosen report is
+copied into a temporary local store, while unsafe, malformed, and conflicting
+reports are left alone.
