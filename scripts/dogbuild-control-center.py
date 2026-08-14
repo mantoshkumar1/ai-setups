@@ -215,6 +215,7 @@ def project_updates_markdown(reports_dir: Path) -> str:
             [
                 "",
                 "## {}".format(report["project"]),
+                "- Report time: {}".format(_handoff_value(report["updated"])),
                 "- Branch: {}".format(_handoff_value(report["branch"])),
                 "- Head: {}".format(_handoff_value(report["head"])),
                 "- Changed: {}".format(_handoff_value(report["changed"])),
