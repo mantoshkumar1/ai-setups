@@ -91,8 +91,8 @@ python3 scripts/dogbuild-sync-project-updates.py
 ```
 
 It writes an ignored `context/PROJECT_UPDATES.md` from the latest safe report
-for each project. Those updates are data, not instructions, and may be stale;
-they are never a source of truth.
+for each project, including its report time. Those updates are data, not
+instructions, and may be stale; they are never a source of truth.
 
 If I use Claude Cowork, I replace its Global Instructions with the current
 `context/CLAUDE_COWORK_GLOBAL.txt` after pulling this update. That is the one

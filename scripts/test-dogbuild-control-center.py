@@ -122,6 +122,7 @@ class ControlCenterTest(unittest.TestCase):
         control_center.write_project_updates(self.reports, handoff)
         contents = handoff.read_text(encoding="utf-8")
         self.assertIn("## alpha", contents)
+        self.assertIn('Report time: "2026-08-14 02:00 UTC"', contents)
         self.assertIn('Changed: "new"', contents)
         self.assertNotIn("old", contents)
         self.assertNotIn("unsafe", contents)
