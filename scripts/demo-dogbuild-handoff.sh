@@ -12,7 +12,6 @@ fi
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 demo_root="$(mktemp -d "${TMPDIR:-/tmp}/dogbuild-ai-state-demo.XXXXXX")"
 project_dir="$demo_root/atlas-web"
-source_dir="$demo_root/source"
 reports_dir="$demo_root/reports"
 handoff="$demo_root/PROJECT_UPDATES.md"
 
@@ -22,20 +21,11 @@ cleanup() {
 trap cleanup EXIT
 
 git init -q "$project_dir"
-dogbuild report "$project_dir" --output-dir "$source_dir" \
+python3 "$script_dir/dogbuild-share.py" "$project_dir" --reports-dir "$reports_dir" --handoff-output "$handoff" \
   --changed 'Added a safe local AI-state handoff' \
   --worked 'DogBuild report completed' \
   --blocked 'Nothing' \
   --next 'Open the local Control Center' >/dev/null
-
-source_report="$(find "$source_dir" -maxdepth 1 -type f -name '*-summary*.md' -print -quit)"
-if [[ -z "$source_report" ]]; then
-  echo 'DogBuild did not write a report, so the demo stopped.' >&2
-  exit 1
-fi
-
-python3 "$script_dir/dogbuild-import-report.py" "$source_report" --reports-dir "$reports_dir" >/dev/null
-python3 "$script_dir/dogbuild-sync-project-updates.py" --reports-dir "$reports_dir" --output "$handoff" >/dev/null
 
 echo 'A temporary DogBuild project created one safe report.'
 echo 'ai-setups imported it and built a temporary local handoff.'
