@@ -2,6 +2,14 @@
 
 Private, personal machine-level infrastructure for AI tools. This repository keeps safe shared instructions, setup documentation, and future helper tooling in one durable place. Secrets stay local and are never committed.
 
+## Start here: setting up a new machine
+
+1. Clone this private repository.
+2. Create `config/.github-pat` on your machine and paste **only** your GitHub Personal Access Token into it—no labels, comments, quotes, or `PASTE ... HERE` text. Never commit or share this file.
+3. Restrict the file to your user: run `chmod 600 config/.github-pat` on macOS/Linux, or set a user-only NTFS ACL on Windows.
+4. In `~/.codex/AGENTS.md`, point Codex to `<your-clone>/context/GLOBAL_AI_CONTEXT.md`.
+5. If you use Claude Cowork, connect only `<your-clone>/context` and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions.
+
 Throughout this documentation, the *repository root* means the directory containing this README. Paths such as `context/` and `config/` are relative to that directory, so the repository can live anywhere on a machine.
 
 ## Why this exists
@@ -47,15 +55,6 @@ Technical capability is not semantic authority. Repository-specific governance w
 - `.github-pat` must never enter Git history.
 - Never paste credentials into prompts, logs, issues, pull requests, commits, or artifacts.
 - If a secret is ever committed, treat it as compromised and rotate it; deleting the file is not enough.
-
-## Quick setup on a new machine
-
-1. Clone this private repository.
-2. Create `config/.github-pat` locally with your own GitHub token. Never commit or share it.
-3. Restrict it to your user: run `chmod 600 config/.github-pat` on macOS/Linux, or set a user-only NTFS ACL on Windows.
-4. In `~/.codex/AGENTS.md`, point Codex to `<your-clone>/context/GLOBAL_AI_CONTEXT.md`.
-5. In Claude Cowork, connect only `<your-clone>/context` and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions.
-6. Verify Codex can read Projects v2 and Cowork can load the shared context.
 
 ## Platform support
 
