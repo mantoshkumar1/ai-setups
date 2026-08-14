@@ -88,4 +88,6 @@ Write-Host ''
 Write-Host 'Next steps:'
 Write-Host '1. Open Codex and start a new task in the actual project you want to work on.'
 Write-Host '2. Describe the task normally; never paste the PAT into the conversation.'
-Write-Host "3. If you use Claude Cowork, connect only: $repoRoot\context"
+Write-Host '3. If you use Claude Cowork:'
+Write-Host "   - Connect only: $repoRoot\context"
+Write-Host "   - Open Cowork Global Instructions and paste the entire contents of: $repoRoot\context\CLAUDE_COWORK_GLOBAL.txt"

@@ -84,4 +84,6 @@ bash "$script_dir/validate.sh"
 printf '\nNext steps:\n'
 printf '%s\n' '1. Open Codex and start a new task in the actual project you want to work on.'
 printf '%s\n' '2. Describe the task normally; never paste the PAT into the conversation.'
-printf '%s\n' "3. If you use Claude Cowork, connect only: $repo_root/context"
+printf '%s\n' '3. If you use Claude Cowork:'
+printf '%s\n' "   - Connect only: $repo_root/context"
+printf '%s\n' "   - Open Cowork Global Instructions and paste the entire contents of: $repo_root/context/CLAUDE_COWORK_GLOBAL.txt"

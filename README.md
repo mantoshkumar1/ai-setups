@@ -18,7 +18,7 @@ Private, personal machine-level infrastructure for AI tools. This repository kee
    ```
 
    The script asks for your PAT only if `config/.github-pat` is missing, protects that file, sets up your personal Codex instructions, and runs the local validator. It ends by showing the remaining manual steps. It never prints the token.
-3. If you use Claude Cowork, connect only this repository's `context/` directory and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions. This is the one manual app setting.
+3. If you use Claude Cowork, connect only this repository's `context/` directory. Then open **Cowork Global Instructions** and paste the entire contents of `context/CLAUDE_COWORK_GLOBAL.txt`. This is the one manual app setting.
 
 ## What you still do manually
 
@@ -27,7 +27,7 @@ The script cannot do these personal or app-specific steps for you:
 1. Install Codex and sign in to your own account.
 2. Clone this private repository on the machine.
 3. Paste your own PAT when the script privately prompts for it. The script never creates, prints, or uploads the token for you.
-4. If you use Claude Cowork, make its one-time `context/` connection and paste its Global Instructions in the Cowork app.
+4. If you use Claude Cowork, make its one-time `context/` connection. Then open **Cowork Global Instructions** and paste the entire contents of `context/CLAUDE_COWORK_GLOBAL.txt` there.
 5. Whenever you want to work, choose the actual project and start a new Codex task there.
 
 ## Validate your setup
