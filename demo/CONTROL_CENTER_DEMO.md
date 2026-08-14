@@ -1,0 +1,36 @@
+# DogBuild Control Center — five-minute demo
+
+## Start it
+
+```sh
+python3 scripts/dogbuild-control-center.py --demo
+```
+
+Open the local address shown in the terminal.
+
+## Use case
+
+I am working across a few projects with AI help. The useful question is not
+"what did every agent say?" It is: **what changed, what is blocked, and what
+needs me next?**
+
+The page answers that from short project reports. In the demo, `ledger-api`
+needs sandbox access; the other two projects have a clear next action but no
+recorded blocker. I can decide what to do without reopening an old agent
+session, reading logs, or giving a tool my credentials.
+
+## Make it real
+
+Start the same page without `--demo` after DogBuild has written reports into
+`reports/dogbuild/`:
+
+```sh
+python3 scripts/dogbuild-control-center.py
+```
+
+The browser refreshes the local report folder every five seconds.
+
+## What it is not
+
+It is not a hosted dashboard, source-code viewer, agent controller, or source
+of truth. It only makes the safe report facts easier to see.

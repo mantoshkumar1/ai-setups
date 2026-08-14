@@ -26,3 +26,12 @@ It creates temporary reports, confirms that the latest report per project is
 shown, and checks that malformed or obvious unsafe reports are skipped. It does
 not touch real reports or configuration. The PowerShell overview is included but
 still needs real Windows validation; see GitHub issue #3.
+
+## Test the Control Center
+
+```sh
+python3 scripts/test-dogbuild-control-center.py
+```
+
+This starts a temporary localhost server and checks report parsing plus its JSON
+endpoint. It does not read real reports, configuration, or the network.

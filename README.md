@@ -69,6 +69,19 @@ bash scripts/dogbuild-overview.sh
 
 This is local and read-only. It scans only the report folder and skips malformed or unsafe reports.
 
+## Demo the Control Center
+
+For a five-minute local demo with fictional project reports, run:
+
+```sh
+python3 scripts/dogbuild-control-center.py --demo
+```
+
+Open the local address shown in the terminal. The page refreshes safe reports
+from one local folder; it has no account, cloud sync, repository scanning, or
+access to `config/`. The short [demo walkthrough](demo/CONTROL_CENTER_DEMO.md)
+shows the customer use case.
+
 ## What is here
 
 - `context/` — safe shared context for Codex and Cowork.
