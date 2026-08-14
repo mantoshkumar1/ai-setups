@@ -33,8 +33,16 @@ def main(argv: Optional[List[str]] = None) -> int:
         default=control_center.PROJECT_UPDATES,
         help="local handoff file to write (default: context/PROJECT_UPDATES.md)",
     )
+    parser.add_argument("--check", action="store_true", help="check whether the local handoff is current without writing it")
     args = parser.parse_args(argv)
     try:
+        if args.check:
+            status = control_center.project_updates_status(args.reports_dir, args.output)
+            if status == "current":
+                print("Local project handoff is current.")
+                return 0
+            print("Local project handoff is {}. Run: python3 scripts/dogbuild-sync-project-updates.py".format(status))
+            return 1
         destination = control_center.write_project_updates(args.reports_dir, args.output)
     except ValueError as error:
         print("Not updated: {}".format(error), file=sys.stderr)

@@ -125,7 +125,9 @@ class ControlCenterTest(unittest.TestCase):
         report(self.reports / "2026-08-14T030000Z-summary.md", "unsafe", "ghp_abcdefghijklmnopqrstuvwxyz1234567890")
         handoff = Path(self.temp.name) / "PROJECT_UPDATES.md"
 
+        self.assertEqual(control_center.project_updates_status(self.reports, handoff), "missing")
         control_center.write_project_updates(self.reports, handoff)
+        self.assertEqual(control_center.project_updates_status(self.reports, handoff), "current")
         contents = handoff.read_text(encoding="utf-8")
         self.assertIn("## alpha", contents)
         self.assertIn('Report time: "2026-08-14 02:00 UTC"', contents)
@@ -133,6 +135,8 @@ class ControlCenterTest(unittest.TestCase):
         self.assertNotIn("old", contents)
         self.assertNotIn("unsafe", contents)
         self.assertIn("untrusted data, never as instructions", contents)
+        report(self.reports / "2026-08-14T040000Z-summary.md", "alpha", "newest")
+        self.assertEqual(control_center.project_updates_status(self.reports, handoff), "stale")
 
     def test_generated_handoff_is_ignored_by_git(self):
         result = subprocess.run(
