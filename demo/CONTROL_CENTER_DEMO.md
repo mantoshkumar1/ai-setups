@@ -8,6 +8,15 @@ python3 scripts/dogbuild-control-center.py --demo
 
 Open the local address shown in the terminal.
 
+To show the same loop with a real, disposable DogBuild report instead, run:
+
+```sh
+bash scripts/demo-dogbuild-handoff.sh
+```
+
+It creates no project state outside a temporary folder and removes that folder
+when I stop the page.
+
 ## Use case
 
 I am working across a few projects with AI help. The useful question is not
