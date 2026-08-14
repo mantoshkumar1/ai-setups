@@ -2,6 +2,8 @@
 
 Private, personal machine-level infrastructure for AI tools. This repository keeps safe shared instructions, setup documentation, and future helper tooling in one durable place. Secrets stay local and are never committed.
 
+Throughout this documentation, the *repository root* means the directory containing this README. Paths such as `context/` and `config/` are relative to that directory, so the repository can live anywhere on a machine.
+
 ## Why this exists
 
 I use multiple AI tools and agents. This gives their shared setup a durable home, so important configuration does not rely on memory or repeated prompts.
@@ -24,8 +26,8 @@ I use multiple AI tools and agents. This gives their shared setup a durable home
 
 ### Claude Cowork
 
-- Cowork connects only `/Users/mantoshkumar/Desktop/project/ai-setups/context`.
-- Cowork must never connect to `/Users/mantoshkumar/Desktop/project/ai-setups` or `/Users/mantoshkumar/Desktop/project/ai-setups/config`.
+- Cowork connects only to this repository's `context/` directory.
+- Cowork must never connect to the repository root or its `config/` directory.
 - Cowork Global Instructions are sourced from [context/CLAUDE_COWORK_GLOBAL.txt](context/CLAUDE_COWORK_GLOBAL.txt).
 - Cowork currently does not receive direct access to the PAT.
 

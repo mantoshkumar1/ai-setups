@@ -8,14 +8,12 @@ Technical capability and semantic authority are separate. Repository-specific go
 
 Never print, echo, log, display, commit, publish, or transmit credentials or secrets.
 
-Do not request or access:
-/Users/mantoshkumar/Desktop/project/ai-setups/config
+Do not request or access the sibling `config/` directory.
 
-That directory is the machine secret store and is intentionally not Cowork context.
+It is the machine secret store and is intentionally not Cowork context.
 
-Safe shared machine-level context lives at:
-/Users/mantoshkumar/Desktop/project/ai-setups/context/GLOBAL_AI_CONTEXT.md
+Safe shared machine-level context is `GLOBAL_AI_CONTEXT.md` in this directory.
 
-Cowork should connect only `/Users/mantoshkumar/Desktop/project/ai-setups/context`, never the `ai-setups` parent directory.
+Cowork should connect only this `context/` directory, never the repository root.
 
 If a required capability is unavailable through Cowork's configured tools/connectors, report the capability blocker instead of asking for secret-folder access.

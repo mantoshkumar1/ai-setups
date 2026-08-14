@@ -18,9 +18,6 @@ Never print, echo, log, display, commit, publish, transmit, or include credentia
 
 Do not enumerate or dump secret files.
 
-The directory:
-/Users/mantoshkumar/Desktop/project/ai-setups/config
-is a secret/configuration store and is not general agent context.
+The sibling `config/` directory is a secret/configuration store and is not general agent context.
 
-Safe shared machine-level context lives at:
-/Users/mantoshkumar/Desktop/project/ai-setups/context
+Safe shared machine-level context lives alongside this file in `context/`.
