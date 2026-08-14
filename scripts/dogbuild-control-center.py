@@ -15,7 +15,7 @@ import tempfile
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import unquote, urlparse
 
 
@@ -24,8 +24,10 @@ DEFAULT_REPORTS = ROOT / "reports" / "dogbuild"
 DEMO_REPORTS = ROOT / "demo" / "dogbuild-reports"
 PROJECT_UPDATES = ROOT / "context" / "PROJECT_UPDATES.md"
 PROJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
-TIMESTAMP_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{6}Z)-summary\.md$")
-REPORT_FILENAME_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{6}Z)(?:--[A-Za-z0-9._-]+)?-summary\.md$")
+SOURCE_FILENAME_RE = re.compile(r"^(\d{4}-\d{2}-\d{2}T\d{6}Z)-summary(?:-(\d+))?\.md$")
+REPORT_FILENAME_RE = re.compile(
+    r"^(\d{4}-\d{2}-\d{2}T\d{6}Z)(?:--[A-Za-z0-9._-]+)?-summary(?:-(\d+))?\.md$"
+)
 UNSAFE_RE = re.compile(
     r"ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|"
     r"AKIA[0-9A-Z]{16}|Bearer\s+\S+|Authorization:\s*\S+",
@@ -58,13 +60,20 @@ def _display_time(filename: str) -> str:
     return "{} {} UTC".format(timestamp[:10], timestamp[11:13] + ":" + timestamp[13:15])
 
 
+def _report_sort_key(filename: str) -> Tuple[str, int]:
+    match = REPORT_FILENAME_RE.match(filename)
+    if not match:
+        return ("", 0)
+    return (match.group(1), int(match.group(2) or "1"))
+
+
 def parse_report_text(text: str, filename: str) -> Optional[Dict[str, str]]:
     """Return one safe, well-formed report body or None.
 
     This intentionally does not try to repair report content. A bad or unsafe
     file should be invisible rather than accidentally become a data source.
     """
-    if UNSAFE_RE.search(text):
+    if not REPORT_FILENAME_RE.match(filename) or UNSAFE_RE.search(text):
         return None
 
     lines = text.splitlines()
@@ -109,8 +118,9 @@ def import_report(source: Path, reports_dir: Path) -> Path:
     """Copy one explicit safe report into the local report store without overwriting."""
     if is_within(source, ROOT / "config") or is_within(reports_dir, ROOT / "config"):
         raise ValueError("The config directory is never a report source or destination")
-    if not TIMESTAMP_RE.match(source.name):
-        raise ValueError("Source filename must be YYYY-MM-DDTHHMMSSZ-summary.md")
+    source_match = SOURCE_FILENAME_RE.match(source.name)
+    if not source_match:
+        raise ValueError("Source filename must be YYYY-MM-DDTHHMMSSZ-summary.md (or DogBuild's -2 form)")
     try:
         text = source.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as error:
@@ -120,8 +130,9 @@ def import_report(source: Path, reports_dir: Path) -> Path:
     if report is None:
         raise ValueError("Source report is malformed or contains a likely secret")
 
-    timestamp = TIMESTAMP_RE.match(source.name).group(1)
-    destination = reports_dir / "{}--{}-summary.md".format(timestamp, report["project"])
+    timestamp, sequence = source_match.groups()
+    suffix = "-{}".format(sequence) if sequence else ""
+    destination = reports_dir / "{}--{}-summary{}.md".format(timestamp, report["project"], suffix)
     reports_dir.mkdir(parents=True, exist_ok=True)
     try:
         existing = destination.read_text(encoding="utf-8")
@@ -158,12 +169,12 @@ def load_projects(reports_dir: Path) -> List[Dict[str, str]]:
     if not reports_dir.is_dir():
         return []
     latest: Dict[str, Dict[str, str]] = {}
-    for path in sorted(reports_dir.glob("*-summary.md")):
+    for path in sorted(reports_dir.glob("*.md")):
         report = parse_report(path)
         if report is None:
             continue
         current = latest.get(report["project"])
-        if current is None or report["filename"] > current["filename"]:
+        if current is None or _report_sort_key(report["filename"]) > _report_sort_key(current["filename"]):
             latest[report["project"]] = report
     return [latest[project] for project in sorted(latest)]
 
@@ -173,11 +184,11 @@ def load_history(reports_dir: Path, project: str) -> List[Dict[str, str]]:
     if not PROJECT_RE.match(project or "") or not reports_dir.is_dir():
         return []
     history = []
-    for path in sorted(reports_dir.glob("*-summary.md"), reverse=True):
+    for path in reports_dir.glob("*.md"):
         report = parse_report(path)
         if report is not None and report["project"] == project:
             history.append(report)
-    return history
+    return sorted(history, key=lambda report: _report_sort_key(report["filename"]), reverse=True)
 
 
 def has_recorded_blocker(blocked: str) -> bool:

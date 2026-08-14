@@ -3,6 +3,8 @@
 DogBuild puts short, safe status updates here.
 
 Use one file per update: `YYYY-MM-DDTHHMMSSZ-summary.md`.
+If DogBuild needs to avoid a same-second collision, its
+`YYYY-MM-DDTHHMMSSZ-summary-2.md` form is valid too. Do not rename it.
 
 Keep each update simple:
 

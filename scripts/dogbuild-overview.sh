@@ -52,8 +52,12 @@ fi
 entries="$(mktemp "${TMPDIR:-/tmp}/dogbuild-overview.XXXXXX")"
 trap 'rm -f -- "$entries"' EXIT
 
-for report in "$reports_dir"/*-summary.md; do
+for report in "$reports_dir"/*.md; do
   [[ -f "$report" ]] || continue
+  report_name="${report##*/}"
+  [[ "$report_name" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{6}Z)(--[A-Za-z0-9._-]+)?-summary(-([0-9]+))?\.md$ ]] || continue
+  timestamp="${BASH_REMATCH[1]}"
+  sequence="${BASH_REMATCH[4]:-1}"
   safe_report "$report" || continue
 
   project="$(meta "Project" "$report")"
@@ -66,7 +70,7 @@ for report in "$reports_dir"/*-summary.md; do
 
   [[ "$project" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || continue
   [[ -n "$branch" && -n "$head" && -n "$changed" && -n "$worked" && -n "$blocked" && -n "$next_action" ]] || continue
-  printf '%s\t%s\n' "$project" "$report" >> "$entries"
+  printf '%s\t%s\t%09d\t%s\n' "$project" "$timestamp" "$sequence" "$report" >> "$entries"
 done
 
 if [[ ! -s "$entries" ]]; then
@@ -77,11 +81,11 @@ fi
 printf 'DogBuild report overview\n\n'
 last_project=""
 last_report=""
-while IFS=$'\t' read -r project report; do
+while IFS=$'\t' read -r project _timestamp _sequence report; do
   if [[ -n "$last_project" && "$project" != "$last_project" ]]; then
     render "$last_report"
   fi
   last_project="$project"
   last_report="$report"
-done < <(LC_ALL=C sort -t $'\t' -k1,1 -k2,2 "$entries")
+done < <(LC_ALL=C sort -t $'\t' -k1,1 -k2,2 -k3,3n "$entries")
 render "$last_report"
