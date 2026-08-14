@@ -13,7 +13,7 @@ import re
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from urllib.parse import unquote, urlparse
 
 
@@ -27,6 +27,7 @@ UNSAFE_RE = re.compile(
     r"AKIA[0-9A-Z]{16}|Bearer\s+\S+|Authorization:\s*\S+",
     re.IGNORECASE,
 )
+CLEAR_BLOCKERS = frozenset(("nothing", "none", "no blocker", "no blockers", "no active blocker"))
 
 
 def _meta(lines: List[str], key: str) -> str:
@@ -113,6 +114,18 @@ def load_history(reports_dir: Path, project: str) -> List[Dict[str, str]]:
     return history
 
 
+def has_recorded_blocker(blocked: str) -> bool:
+    """Return whether a report records a blocker without scoring its urgency."""
+    return blocked.strip().lower() not in CLEAR_BLOCKERS
+
+
+def project_payload(reports_dir: Path) -> List[Dict[str, Any]]:
+    return [
+        {**report, "has_recorded_blocker": has_recorded_blocker(report["blocked"])}
+        for report in load_projects(reports_dir)
+    ]
+
+
 PAGE = """<!doctype html>
 <html lang="en">
 <head>
@@ -124,7 +137,7 @@ PAGE = """<!doctype html>
     * { box-sizing:border-box; } body { margin:0; color:var(--ink); background:var(--bg); font:16px/1.45 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
     header { padding:54px max(24px,calc((100vw - 1120px)/2)); background:linear-gradient(120deg,#172033 0%,#2b2f70 100%); color:white; }
     .eyebrow { margin:0 0 10px; color:#c9c5ff; font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; } h1 { margin:0; font-size:clamp(32px,5vw,54px); line-height:1.04; letter-spacing:-.045em; } .intro { max-width:650px; margin:16px 0 0; color:#e1e4fd; font-size:18px; }
-    main { max-width:1120px; margin:0 auto; padding:28px 24px 64px; } .bar { display:flex; align-items:center; justify-content:space-between; gap:16px; color:var(--muted); font-size:14px; margin-bottom:20px; } .pill { border:1px solid #d7ddff; background:#eef0ff; color:#4a3fe0; border-radius:999px; padding:5px 10px; font-weight:700; }
+    main { max-width:1120px; margin:0 auto; padding:28px 24px 64px; } .focus { margin-bottom:28px; border:1px solid #f1c5ba; border-radius:18px; background:var(--alert); padding:22px; } .focus h2 { margin:0 0 10px; } .focus-copy { margin:0 0 16px; color:var(--muted); } .attention-list { display:grid; gap:10px; } .attention-item { display:flex; align-items:start; justify-content:space-between; gap:18px; border-radius:12px; background:white; padding:14px; } .attention-project { font-weight:800; } .attention-next { color:#9d3c2c; font-weight:700; text-align:right; } .attention-empty { color:var(--muted); } .bar { display:flex; align-items:center; justify-content:space-between; gap:16px; color:var(--muted); font-size:14px; margin-bottom:20px; } .pill { border:1px solid #d7ddff; background:#eef0ff; color:#4a3fe0; border-radius:999px; padding:5px 10px; font-weight:700; }
     #projects { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; } .card { position:relative; overflow:hidden; border:1px solid var(--line); border-radius:18px; background:var(--paper); box-shadow:0 8px 26px rgba(22,32,51,.06); padding:22px; } .card::before { content:""; position:absolute; inset:0 auto 0 0; width:5px; background:var(--accent); } .card.attention::before { background:#e46b52; } .title { display:flex; justify-content:space-between; gap:12px; align-items:start; } h2 { margin:0; font-size:22px; letter-spacing:-.02em; } .updated { color:var(--muted); font-size:12px; white-space:nowrap; } .git { margin:6px 0 20px; color:var(--muted); font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; }
     dl { display:grid; gap:14px; margin:0; } dt { margin:0 0 2px; color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; } dd { margin:0; } .next { margin-top:20px; padding:14px; border-radius:12px; background:var(--warm); } .next dd { font-weight:700; } .history { margin-top:18px; border-top:1px solid var(--line); padding-top:14px; } summary { cursor:pointer; color:#4a3fe0; font-size:14px; font-weight:700; } .history-list { display:grid; gap:12px; margin-top:14px; } .history-item { border-left:3px solid #d7ddff; padding-left:10px; font-size:14px; } .history-time { color:var(--muted); font-size:12px; } .history-label { color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; } .history-loading { margin:12px 0 0; color:var(--muted); font-size:14px; } .empty { grid-column:1/-1; padding:34px; text-align:center; background:var(--paper); border:1px dashed #cbd2dd; border-radius:16px; color:var(--muted); }
     footer { max-width:1120px; margin:0 auto; padding:0 24px 32px; color:var(--muted); font-size:13px; } @media (max-width:560px) { header { padding-top:38px; } .bar { align-items:flex-start; flex-direction:column; } }
@@ -133,16 +146,20 @@ PAGE = """<!doctype html>
 <body>
   <header><p class="eyebrow">Local-only project briefings</p><h1>DogBuild Control Center</h1><p class="intro">A quiet view of what changed, what is blocked, and what needs your attention next.</p></header>
   <main>
+    <section class="focus"><p class="eyebrow" style="color:#a14333">Recorded blockers</p><h2>Needs your attention</h2><p class="focus-copy">This is a literal queue from project reports, not an AI priority score.</p><div id="attention" class="attention-list"></div></section>
     <div class="bar"><span id="summary">Loading local reports…</span><span class="pill">Local and read-only</span></div>
     <section id="projects" aria-live="polite"></section>
   </main>
   <footer>Reads one local report folder. No account, cloud sync, repository scanning, or secret access.</footer>
   <script>
-    const clearBlockers = new Set(['nothing','none','no blocker','no blockers','no active blocker']);
     const escapeHtml = value => String(value).replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
     function card(project) {
-      const attention = !clearBlockers.has(project.blocked.trim().toLowerCase());
+      const attention = project.has_recorded_blocker;
       return `<article class="card ${attention ? 'attention' : ''}"><div class="title"><h2>${escapeHtml(project.project)}</h2><span class="updated">${escapeHtml(project.updated)}</span></div><p class="git">${escapeHtml(project.branch)} · ${escapeHtml(project.head)}</p><dl><div><dt>Changed</dt><dd>${escapeHtml(project.changed)}</dd></div><div><dt>Worked</dt><dd>${escapeHtml(project.worked)}</dd></div><div><dt>Blocked</dt><dd>${escapeHtml(project.blocked)}</dd></div><div class="next"><dt>Next</dt><dd>${escapeHtml(project.next)}</dd></div></dl><details class="history" data-project="${escapeHtml(project.project)}"><summary>Recent updates</summary><p class="history-loading">Open to load safe local history.</p></details></article>`;
+    }
+    function renderAttention(projects) {
+      const attention = projects.filter(project => project.has_recorded_blocker);
+      document.getElementById('attention').innerHTML = attention.length ? attention.map(project => `<div class="attention-item"><div><div class="attention-project">${escapeHtml(project.project)}</div><div>${escapeHtml(project.blocked)}</div></div><div class="attention-next">Next: ${escapeHtml(project.next)}</div></div>`).join('') : '<div class="attention-empty">No project report has a recorded blocker right now.</div>';
     }
     function historyItem(report) {
       return `<div class="history-item"><div class="history-time">${escapeHtml(report.updated)}</div><div><span class="history-label">Changed</span><br>${escapeHtml(report.changed)}</div><div><span class="history-label">Next</span><br>${escapeHtml(report.next)}</div></div>`;
@@ -163,7 +180,9 @@ PAGE = """<!doctype html>
       try {
         const response = await fetch('/api/projects', {cache:'no-store'});
         const data = await response.json();
-        document.getElementById('summary').textContent = `${data.projects.length} project${data.projects.length === 1 ? '' : 's'} · refreshed ${data.refreshed}`;
+        const blockers = data.projects.filter(project => project.has_recorded_blocker).length;
+        document.getElementById('summary').textContent = `${data.projects.length} project${data.projects.length === 1 ? '' : 's'} · ${blockers} recorded blocker${blockers === 1 ? '' : 's'} · refreshed ${data.refreshed}`;
+        renderAttention(data.projects);
         document.getElementById('projects').innerHTML = data.projects.length ? data.projects.map(card).join('') : '<div class="empty">No valid safe reports yet. Run DogBuild reporting first, or start this server with <code>--demo</code>.</div>';
         attachHistory();
       } catch (_) { document.getElementById('summary').textContent = 'Could not read local reports.'; }
@@ -194,7 +213,7 @@ def handler_for(reports_dir: Path):
                 return
             if path == "/api/projects":
                 payload = {
-                    "projects": load_projects(reports_dir),
+                    "projects": project_payload(reports_dir),
                     "refreshed": "from local reports",
                 }
                 self._write(HTTPStatus.OK, "application/json; charset=utf-8", json.dumps(payload).encode("utf-8"))

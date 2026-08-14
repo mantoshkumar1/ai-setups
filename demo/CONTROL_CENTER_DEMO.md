@@ -19,6 +19,10 @@ needs sandbox access; the other two projects have a clear next action but no
 recorded blocker. I can decide what to do without reopening an old agent
 session, reading logs, or giving a tool my credentials.
 
+Start with **Needs your attention**. It places `ledger-api` there because its
+report literally records a blocker, then shows its exact next action. It does
+not pretend to know which work is most important.
+
 Open **Recent updates** on `atlas-web` to see the safe progression from the
 earlier checkout-flow review to the current wording change. It gives useful
 continuity, not a reconstruction of an agent's hidden conversation.
