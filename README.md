@@ -2,6 +2,10 @@
 
 My private, local setup for Codex and Claude Cowork. I keep shared AI context here and keep secrets only on my machine.
 
+## Why I keep this
+
+I use more than one AI tool. This saves me from repeating the same setup every time and helps me keep shared context separate from secrets.
+
 ## Set up a new machine
 
 1. Clone this private repository.
