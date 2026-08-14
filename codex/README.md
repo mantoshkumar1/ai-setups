@@ -18,6 +18,10 @@ bash scripts/setup.sh
 
 The script finds this clone automatically, securely requests a PAT only when no local credential exists, protects the credential file, and adds the shared-context instruction below to your personal Codex file. It preserves unrelated instructions already in that file.
 
+## Starting a session
+
+After setup, open Codex and start a task in the actual repository you want to work on. Use `ai-setups` only when you want to change this setup. Describe the task normally; if it needs GitHub Projects v2, ask for that work without pasting the PAT into the conversation.
+
 ## Where `AGENTS.md` lives
 
 `AGENTS.md` is a personal Codex file, not a file in this repository and not a file at the machine root.

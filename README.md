@@ -20,6 +20,15 @@ Private, personal machine-level infrastructure for AI tools. This repository kee
    The script asks for your PAT only if `config/.github-pat` is missing, protects that file, and sets up your personal Codex instructions. It never prints the token.
 3. If you use Claude Cowork, connect only this repository's `context/` directory and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions. This is the one manual app setting.
 
+## Use it: start a Codex session
+
+1. Open the Codex desktop app.
+2. Start a new task in the **actual project** you want to work on. Do not use `ai-setups` as the project unless you are changing this setup itself.
+3. Describe the work normally—for example: “Review the open issues in this repository” or “Fix this failing test.”
+4. If the work needs your user-owned GitHub Projects v2 data, ask Codex for that task normally. Do **not** paste the PAT into the message; Codex uses the local file only when that capability is needed.
+
+Once the setup script has run, you do not need to repeat it for each Codex session.
+
 Throughout this documentation, the *repository root* means the directory containing this README. Paths such as `context/` and `config/` are relative to that directory, so the repository can live anywhere on a machine.
 
 ## Why this exists
