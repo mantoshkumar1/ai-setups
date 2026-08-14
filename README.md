@@ -60,7 +60,7 @@ If I need user-owned GitHub Projects v2 data, I ask Codex for that work normally
 - `context/` — safe shared context for Codex and Cowork.
 - `config/` — my local secrets; see [config/README.md](config/README.md).
 - `codex/` — more detail about my Codex setup; see [codex/README.md](codex/README.md).
-- `scripts/` — setup and validation helpers.
+- `scripts/` — setup and validation helpers; see [scripts/README.md](scripts/README.md) for test notes.
 
 ## Keep secrets local
 
