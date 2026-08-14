@@ -31,11 +31,16 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         destination = control_center.import_report(args.source, args.reports_dir)
+        handoff = None
+        if args.reports_dir.resolve() == control_center.DEFAULT_REPORTS.resolve():
+            handoff = control_center.write_project_updates(args.reports_dir)
     except (ValueError, FileExistsError) as error:
         print("Not imported: {}".format(error), file=sys.stderr)
         return 1
 
     print("Safe report imported locally: {}".format(destination))
+    if handoff:
+        print("Updated local project handoff: {}".format(handoff))
     print("Open the Control Center to see this project update.")
     return 0
 
