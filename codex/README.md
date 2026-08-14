@@ -23,3 +23,7 @@ Before performing repository or GitHub work, read and follow:
 ```
 
 Recreate `config/.github-pat` locally; do not place a secret value in this repository. On macOS/Linux, set its mode to `600`. On Windows, restrict its NTFS access-control list to the current user.
+
+## Validation status
+
+This configuration has been tested only on this MacBook (macOS). The Windows and Linux notes are unverified recovery guidance; validate the Codex instruction path and secret-file permissions on those hosts before use.

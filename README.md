@@ -59,7 +59,9 @@ Technical capability is not semantic authority. Repository-specific governance w
 7. Test Codex Projects v2 read capability.
 8. Test Cowork shared-context loading.
 
-The repository layout and the Cowork connection rule work the same way on every operating system. Only the local clone location and the mechanism for restricting the secret file differ.
+## Platform support
+
+This setup has been tested only on this MacBook (macOS). The repository layout is intentionally portable, and the Windows/Linux notes are recovery guidance, but they have not yet been validated on those operating systems. Verify the local path, secret-file permissions, and agent configuration before relying on a non-macOS setup.
 
 ## Current known limitation
 
