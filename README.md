@@ -5,7 +5,7 @@ Private, personal machine-level infrastructure for AI tools. This repository kee
 ## Start here: setting up a new machine
 
 1. Clone this private repository.
-2. Create `config/.github-pat` on your machine and paste **only** your GitHub Personal Access Token into it—no labels, comments, quotes, or `PASTE ... HERE` text. Never commit or share this file.
+2. Check for `config/.github-pat`. It is not included in the repository: create it if it is missing. If it already exists and is your local file, replace its contents with **only** your GitHub Personal Access Token—no labels, comments, quotes, or `PASTE ... HERE` text. Never commit or share this file.
 3. Restrict the file to your user: run `chmod 600 config/.github-pat` on macOS/Linux, or set a user-only NTFS ACL on Windows.
 4. In `~/.codex/AGENTS.md`, point Codex to `<your-clone>/context/GLOBAL_AI_CONTEXT.md`.
 5. If you use Claude Cowork, connect only `<your-clone>/context` and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions.
