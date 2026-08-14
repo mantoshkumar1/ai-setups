@@ -41,7 +41,7 @@ Before performing repository or GitHub work, read and follow:
 <your-clone>/context/GLOBAL_AI_CONTEXT.md
 ```
 
-Recreate `config/.github-pat` locally; do not place a secret value in this repository. On macOS/Linux, set its mode to `600`. On Windows, restrict its NTFS access-control list to the current user.
+Keep `config/.github-pat` only on your computer. Never commit, merge, or push it to remote `main`—or to any remote branch. On macOS/Linux, set its mode to `600`. On Windows, restrict its NTFS access-control list to the current user.
 
 ## Validation status
 
