@@ -261,6 +261,19 @@ def write_project_updates(reports_dir: Path, destination: Path = PROJECT_UPDATES
     return destination
 
 
+def project_updates_status(reports_dir: Path, destination: Path = PROJECT_UPDATES) -> str:
+    """Return whether one local handoff is missing, current, or stale."""
+    if is_within(destination, ROOT / "config"):
+        raise ValueError("The config directory is never a handoff destination")
+    try:
+        actual = destination.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return "missing"
+    except (OSError, UnicodeDecodeError) as error:
+        raise ValueError("Could not read the local project-updates handoff") from error
+    return "current" if actual == project_updates_markdown(reports_dir) else "stale"
+
+
 PAGE = """<!doctype html>
 <html lang="en">
 <head>
