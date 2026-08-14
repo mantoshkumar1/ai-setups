@@ -93,6 +93,16 @@ python3 scripts/dogbuild-share.py /path/to/project \
 
 It uses DogBuild to make the safe report and refreshes my local handoff.
 
+On Windows PowerShell, the equivalent (untested) command is:
+
+```powershell
+py .\scripts\dogbuild-share.py C:\path\to\project `
+  --changed "What changed" `
+  --worked "What worked" `
+  --blocked "Nothing" `
+  --next "What I will do next"
+```
+
 To add one report from another project, give ai-setups that exact report file:
 
 ```sh
