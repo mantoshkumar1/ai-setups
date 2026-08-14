@@ -7,8 +7,15 @@ Private, personal machine-level infrastructure for AI tools. This repository kee
 1. Clone this private repository.
 2. Check for `config/.github-pat`. It is not included in the repository: create it if it is missing. If it already exists and is your local file, replace its contents with **only** your GitHub Personal Access Token—no labels, comments, quotes, or `PASTE ... HERE` text. Never commit or share this file.
 3. Restrict the file to your user: run `chmod 600 config/.github-pat` on macOS/Linux, or set a user-only NTFS ACL on Windows.
-4. In `~/.codex/AGENTS.md`, point Codex to `<your-clone>/context/GLOBAL_AI_CONTEXT.md`.
-5. If you use Claude Cowork, connect only `<your-clone>/context` and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions.
+4. Create or open your personal Codex file: `~/.codex/AGENTS.md` (on Windows: `%USERPROFILE%\.codex\AGENTS.md`). This is inside **your home folder**—not the machine root and not this repository.
+5. Add this to that file, replacing `<your-clone>` with this repository's location on your machine:
+
+   ```text
+   Before performing repository or GitHub work, read and follow:
+   <your-clone>/context/GLOBAL_AI_CONTEXT.md
+   ```
+
+6. If you use Claude Cowork, connect only `<your-clone>/context` and paste `CLAUDE_COWORK_GLOBAL.txt` into Global Instructions.
 
 Throughout this documentation, the *repository root* means the directory containing this README. Paths such as `context/` and `config/` are relative to that directory, so the repository can live anywhere on a machine.
 
