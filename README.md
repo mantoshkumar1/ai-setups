@@ -112,6 +112,15 @@ manual Cowork step; Codex reads the local handoff automatically when it exists.
 
 ## Demo the Control Center
 
+For a live, disposable demo using the real installed DogBuild command, run:
+
+```sh
+bash scripts/demo-dogbuild-handoff.sh
+```
+
+It creates a temporary project, report, and handoff, then opens the Control
+Center for that temporary data. Press Ctrl-C when done; it removes everything.
+
 For a five-minute local demo with fictional project reports, run:
 
 ```sh
