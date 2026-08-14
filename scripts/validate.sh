@@ -7,7 +7,8 @@ script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 repo_root="$(cd -- "$script_dir/.." && pwd -P)"
 context_file="$repo_root/context/GLOBAL_AI_CONTEXT.md"
 pat_file="$repo_root/config/.github-pat"
-agent_file="$HOME/.codex/AGENTS.md"
+ai_setups_home="${AI_SETUPS_HOME:-$HOME}"
+agent_file="$ai_setups_home/.codex/AGENTS.md"
 failures=0
 
 pass() {
@@ -32,12 +33,10 @@ else
 fi
 
 if [[ -f "$pat_file" ]]; then
-  if mode="$(stat -f '%Lp' "$pat_file" 2>/dev/null)"; then
-    :
-  elif mode="$(stat -c '%a' "$pat_file" 2>/dev/null)"; then
-    :
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    mode="$(stat -f '%Lp' "$pat_file" 2>/dev/null || true)"
   else
-    mode=""
+    mode="$(stat -c '%a' "$pat_file" 2>/dev/null || true)"
   fi
 
   if [[ "$mode" == "600" ]]; then

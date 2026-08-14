@@ -12,7 +12,15 @@ The test creates a temporary Git repository, a fake PAT, and a temporary home fo
 
 It does not touch `config/.github-pat`, `~/.codex`, or the current checkout. Do not use a real token in this test.
 
-This test currently covers macOS/Linux only. There is no Windows equivalent yet.
+On Windows PowerShell, run:
+
+```powershell
+.\scripts\test-setup.ps1
+```
+
+It uses the same temporary-copy approach and never uses a real PAT or personal
+Codex folder. Hosted checks run these isolated setup tests on macOS, Linux, and
+Windows. They do not replace real-machine validation.
 
 ## Test the DogBuild overview
 
