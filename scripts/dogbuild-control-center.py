@@ -295,7 +295,7 @@ PAGE = """<!doctype html>
   <header><p class="eyebrow">Local-only project briefings</p><h1>DogBuild Control Center</h1><p class="intro">A quiet view of what changed, what is blocked, and what needs your attention next.</p></header>
   <main>
     <section class="focus"><p class="eyebrow" style="color:#a14333">Recorded blockers</p><h2>Needs your attention</h2><p class="focus-copy">This is a literal queue from project reports, not an AI priority score.</p><div id="attention" class="attention-list"></div></section>
-    <div class="bar"><span id="summary">Loading local reports…</span><span class="pill">Local and read-only</span></div>
+    <div class="bar"><span id="summary">Loading local reports…</span><span><span id="handoff-status" class="pill" hidden></span> <span class="pill">Local and read-only</span></span></div>
     <section id="projects" aria-live="polite"></section>
   </main>
   <footer>Reads one local report folder. No account, cloud sync, repository scanning, or secret access.</footer>
@@ -330,6 +330,9 @@ PAGE = """<!doctype html>
         const data = await response.json();
         const blockers = data.projects.filter(project => project.has_recorded_blocker).length;
         document.getElementById('summary').textContent = `${data.projects.length} project${data.projects.length === 1 ? '' : 's'} · ${blockers} recorded blocker${blockers === 1 ? '' : 's'} · refreshed ${data.refreshed}`;
+        const handoff = document.getElementById('handoff-status');
+        handoff.hidden = !data.handoff_status;
+        if (data.handoff_status) handoff.textContent = `Shared handoff: ${data.handoff_status}`;
         renderAttention(data.projects);
         document.getElementById('projects').innerHTML = data.projects.length ? data.projects.map(card).join('') : '<div class="empty">No valid safe reports yet. Run DogBuild reporting first, or start this server with <code>--demo</code>.</div>';
         attachHistory();
@@ -341,7 +344,7 @@ PAGE = """<!doctype html>
 </html>"""
 
 
-def handler_for(reports_dir: Path):
+def handler_for(reports_dir: Path, handoff_path: Optional[Path] = None):
     class ControlCenterHandler(BaseHTTPRequestHandler):
         def log_message(self, format: str, *args) -> None:  # Keep the demo terminal quiet.
             return
@@ -363,6 +366,7 @@ def handler_for(reports_dir: Path):
                 payload = {
                     "projects": project_payload(reports_dir),
                     "refreshed": "from local reports",
+                    "handoff_status": project_updates_status(reports_dir, handoff_path) if handoff_path else None,
                 }
                 self._write(HTTPStatus.OK, "application/json; charset=utf-8", json.dumps(payload).encode("utf-8"))
                 return
@@ -392,7 +396,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         parser.error("--port must be between 1 and 65535")
 
     reports_dir = (DEMO_REPORTS if args.demo else args.reports_dir or DEFAULT_REPORTS).resolve()
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), handler_for(reports_dir))
+    handoff_path = PROJECT_UPDATES if reports_dir == DEFAULT_REPORTS else None
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), handler_for(reports_dir, handoff_path))
     print("DogBuild Control Center")
     print("Reports: {}".format(reports_dir))
     print("Open: http://127.0.0.1:{}".format(args.port))
