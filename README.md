@@ -81,6 +81,18 @@ bash scripts/dogbuild-overview.sh
 
 This is local and read-only. It scans only the report folder and skips malformed or unsafe reports.
 
+If I am writing the update now, I do not need to know the report-folder path:
+
+```sh
+python3 scripts/dogbuild-share.py /path/to/project \
+  --changed "What changed" \
+  --worked "What worked" \
+  --blocked "Nothing" \
+  --next "What I will do next"
+```
+
+It uses DogBuild to make the safe report and refreshes my local handoff.
+
 To add one report from another project, give ai-setups that exact report file:
 
 ```sh
